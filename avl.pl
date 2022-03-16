@@ -359,8 +359,10 @@ avl_test(9, avl(G,3,D,2)) :-
 	
 /* Test uniquement valable avec ECLiPSe
 */
+/*
 avl_test(10, Final) :-
    empty(Init),
    (for(I,1,20), fromto(Init,In,Out,Final) do
      insert(I,In,Out)
    ).
+*/

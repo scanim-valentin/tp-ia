@@ -105,8 +105,9 @@ seconde_diag(K,[E|D],[Ligne|M]) :-
 	 POSSIBLE POUR UN JOUEUR DONNE
 	 *****************************/
 
-possible([X|L], J) :- unifiable(X,J), possible(L,J).
-possible(  [],  _).
+
+possible([HX|TX],J) :- unifiable(HX,J), possible(TX,J).
+possible([],_).
 
 	/* Attention 
 	il faut juste verifier le caractere unifiable
@@ -114,8 +115,9 @@ possible(  [],  _).
 	faut pas realiser l'unification.
 	*/
 
-unifiable([HX|TX],J) :- var(HX,J), unifiable(TX,J).
-	
+unifiable(X,J) :- var(X).
+unifiable(X,J) :- X = J.
+
 	/**********************************
 	 DEFINITION D'UN ALIGNEMENT GAGNANT
 	 OU PERDANT POUR UN JOUEUR DONNE J
@@ -141,9 +143,9 @@ possible pour J qui n'a aucun element encore libre.
 		
 	/* Un alignement perdant pour J est un alignement gagnant pour son adversaire. */
 
-alignement_gagnant(Ali, J) :-  possible(Ali,J).
+alignement_gagnant(Ali, J) :-  possible(Ali,J) .
 
-alignement_perdant(Ali, J) :- adversaire(J,A), possible(Ali,A).
+alignement_perdant(Ali, J) :- adversaire(J,A), alignement_gagnant(Ali,A).
 
 
 
