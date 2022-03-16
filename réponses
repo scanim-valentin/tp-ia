@@ -1,21 +1,5 @@
-1.2 
-a)  final_state(Fin), nth1(4,Fin,Ligne), nth1(4,Ligne,P), P = vide.
+?- situation_initiale(S), joueur_initial(J).
+La partie débute.
 
-b)
-?- initial_state(Ini), nth1(L,Ini,Ligne), nth1(C,Ligne, d).
-permet de donner l'état d'une cellule de l'état Ini.
-
-
-?- final_state(Fin), nth1(3,Fin,Ligne), nth1(2,Ligne,P)
-permet de vérifier la 2eme cellule de la 3eme ligne de l'etat Fin
-(etat final different de l'etat initial pour un 4x4)
-
-c) ?- initial_state(Ini), nth1(3,Ini,Ligne), nth1(2,Ligne,P), P = vide.
-
-d) ?- initial_state(Ini), rule(up, 1, Ini, Next).
- ?- initial_state(Ini), rule(right, 1, Ini, Next).
- ?- initial_state(Ini), rule(left, 1, Ini, Next).
-
-e) ?- initial_state(Ini), findall(Next, rule(Move, 1, Ini, Next), Next_moves) .
-
-f) ?- initial_state(Ini), findall([Next, Move], rule(Move, 1, Ini, Next), Next_moves) .
+?- situation_initiale(S), nth1(3,S,Lig), nth1(2,Lig,o).
+On place "o" aux coordonnées (3,2) en début de partie.
