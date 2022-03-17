@@ -63,7 +63,7 @@ ligne(L, M) :- member(L,M).
 
 get_colonne(_,[],[]).
 get_colonne(Index,[HM|TM],[HC|TC]) :- nth1(Index, HM, HC), get_colonne(Index, TM, TC).
-%colonne([HC|TC],[HM|TM]) :- nth1(Index, HM, HC), get_colonne(Index,[HM|TM],[HC|TC]). 
+
 colonne(C,M) :- get_colonne(Index,M,C).
 
 	/* Definition de la relation liant une diagonale D a la matrice M dans laquelle elle se trouve.
@@ -106,7 +106,7 @@ seconde_diag(K,[E|D],[Ligne|M]) :-
 	 *****************************/
 
 
-possible([HX|TX],J) :- unifiable(HX,J), possible(TX,J).
+possible([HX|TX],J) :- unifiable(HX,J), possible(TX,J), !.
 possible([],_).
 
 	/* Attention 
@@ -143,7 +143,7 @@ possible pour J qui n'a aucun element encore libre.
 		
 	/* Un alignement perdant pour J est un alignement gagnant pour son adversaire. */
 
-alignement_gagnant(Ali, J) :-  possible(Ali,J) .
+alignement_gagnant(Ali, J) :-  possible(Ali,J), ground(Ali) .
 
 alignement_perdant(Ali, J) :- adversaire(J,A), alignement_gagnant(Ali,A).
 
@@ -160,7 +160,13 @@ alignement_perdant(Ali, J) :- adversaire(J,A), alignement_gagnant(Ali,A).
 	*/	
 
 % A FAIRE
-% successeur(J, Etat,[L,C]) :- ? ? ? ?  
+get_emplacement(Etat, [L,C],Emplacement) :-
+	nth1(L,Etat, Ligne),
+	nth1(C, Ligne, Emplacement).
+
+successeur(J, Etat,[L,C]) :-
+	get_emplacement(Etat, [L,C],Emplacement),
+	unifiable(Emplacement, J).
 
 	/**************************************
    	 EVALUATION HEURISTIQUE D'UNE SITUATION
@@ -184,13 +190,22 @@ heuristique(J,Situation,H) :-		% cas 1
 heuristique(J,Situation,H) :-		% cas 2
    H = -10000,				% grand nombre approximant -infini
    alignement(Alig,Situation),
-   alignement_perdant(Alig,J), !.	
-
+   alignement_perdant(Alig,J), !.
 
 % on ne vient ici que si les cut precedents n'ont pas fonctionne,
 % c-a-d si Situation n'est ni perdante ni gagnante.
 
 % A FAIRE 					cas 3
-% heuristique(J,Situation,H) :- ? ? ? ?
+nb_ali(J,Situation,N) :-
+	findall(Ali, ( alignement(Ali,Situation), possible(Ali,J) ) , Alignements),
+	length(Alignements,N).
 
+heuristique(J,Situation,H) :-
+	nb_ali(J,Situation,NbAliJ),
+	adversaire(J,A),
+	nb_ali(A,Situation,NbAliA),
+	H is NbAliJ-NbAliA, !.
 
+test_mat(M) :- M = [[x,o,x],
+					[_,_,x],
+					[_,_,o]].
