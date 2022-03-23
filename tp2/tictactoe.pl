@@ -23,8 +23,8 @@
 	*/
 
 situation_initiale([ [_,_,_],
-                     [_,_,_],
-                     [_,_,_] ]).
+					[_,_,_],
+					[_,_,_] ]).
 
 	% Convention (arbitraire) : c'est x qui commence
 
@@ -38,11 +38,11 @@ adversaire(o,x).
 
 
 	/****************************************************
-	 DEFINIR ICI a l'aide du predicat ground/1 comment
-	 reconnaitre une situation terminale dans laquelle il
-	 n'y a aucun emplacement libre : aucun joueur ne peut
-	 continuer a jouer (quel qu'il soit).
-	 ****************************************************/
+	DEFINIR ICI a l'aide du predicat ground/1 comment
+	reconnaitre une situation terminale dans laquelle il
+	n'y a aucun emplacement libre : aucun joueur ne peut
+	continuer a jouer (quel qu'il soit).
+	****************************************************/
 
 situation_terminale(_Joueur, Situation) :- ground(Situation).
 
@@ -55,9 +55,9 @@ alignement(C, Matrix) :- colonne(  C,Matrix).
 alignement(D, Matrix) :- diagonale(D,Matrix).
 
 	/********************************************
-	 DEFINIR ICI chaque type d'alignement maximal 
- 	 existant dans une matrice carree NxN.
-	 ********************************************/
+	DEFINIR ICI chaque type d'alignement maximal
+	existant dans une matrice carree NxN.
+	********************************************/
 	
 ligne(L, M) :- member(L,M).
 
@@ -101,9 +101,9 @@ seconde_diag(K,[E|D],[Ligne|M]) :-
 
 
 	/*****************************
-	 DEFINITION D'UN ALIGNEMENT 
-	 POSSIBLE POUR UN JOUEUR DONNE
-	 *****************************/
+	DEFINITION D'UN ALIGNEMENT
+	POSSIBLE POUR UN JOUEUR DONNE
+	*****************************/
 
 
 possible([HX|TX],J) :- unifiable(HX,J), possible(TX,J), !.
@@ -119,9 +119,9 @@ unifiable(X,J) :- var(X).
 unifiable(X,J) :- X = J.
 
 	/**********************************
-	 DEFINITION D'UN ALIGNEMENT GAGNANT
-	 OU PERDANT POUR UN JOUEUR DONNE J
-	 **********************************/
+	DEFINITION D'UN ALIGNEMENT GAGNANT
+	OU PERDANT POUR UN JOUEUR DONNE J
+	**********************************/
 	/*
 	Un alignement gagnant pour J est un alignement
 possible pour J qui n'a aucun element encore libre.
@@ -166,31 +166,20 @@ get_emplacement(Etat, [L,C],Emplacement) :-
 
 successeur(J, Etat,[L,C]) :-
 	get_emplacement(Etat, [L,C],Emplacement),
-	unifiable(Emplacement, J).
+	var(Emplacement).
 
 	/**************************************
-   	 EVALUATION HEURISTIQUE D'UNE SITUATION
-  	 **************************************/
+	EVALUATION HEURISTIQUE D'UNE SITUATION
+	**************************************/
 
 	/*
 	1/ l'heuristique est +infini si la situation J est gagnante pour J
 	2/ l'heuristique est -infini si la situation J est perdante pour J
 	3/ sinon, on fait la difference entre :
-	   le nombre d'alignements possibles pour J
+	le nombre d'alignements possibles pour J
 	moins
- 	   le nombre d'alignements possibles pour l'adversaire de J
+	le nombre d'alignements possibles pour l'adversaire de J
 */
-
-
-heuristique(J,Situation,H) :-		% cas 1
-   H = 10000,				% grand nombre approximant +infini
-   alignement(Alig,Situation),
-   alignement_gagnant(Alig,J), !.
-	
-heuristique(J,Situation,H) :-		% cas 2
-   H = -10000,				% grand nombre approximant -infini
-   alignement(Alig,Situation),
-   alignement_perdant(Alig,J), !.
 
 % on ne vient ici que si les cut precedents n'ont pas fonctionne,
 % c-a-d si Situation n'est ni perdante ni gagnante.
@@ -201,11 +190,21 @@ nb_ali(J,Situation,N) :-
 	length(Alignements,N).
 
 heuristique(J,Situation,H) :-
-	nb_ali(J,Situation,NbAliJ),
-	adversaire(J,A),
-	nb_ali(A,Situation,NbAliA),
-	H is NbAliJ-NbAliA, !.
+	nb_ali(J,Situation,NbAliJ),adversaire(J,A),nb_ali(A,Situation,NbAliA),H is NbAliJ-NbAliA, !.
 
-test_mat(M) :- M = [[x,o,x],
-					[_,_,x],
-					[_,_,o]].
+heuristique(J,Situation,H) :-		% cas 1
+H = 10000,				% grand nombre approximant +infini
+alignement(Alig,Situation),
+alignement_gagnant(Alig,J), !.
+
+heuristique(J,Situation,H) :-		% cas 2
+H = -10000,				% grand nombre approximant -infini
+alignement(Alig,Situation),
+alignement_perdant(Alig,J), !.
+
+
+test_mat(M) :- M = [[x,o,x],[_,_,x],[_,_,o]].
+test_heuristique :- test_mat(M),
+					heuristique(x,M,H),
+					H = 1.
+
