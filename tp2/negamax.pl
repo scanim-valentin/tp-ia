@@ -59,7 +59,8 @@ A FAIRE : ECRIRE ici les clauses de negamax/5
 negamax(J, Etat, Pmax, Pmax, [rien, H]) :- heuristique(J,Etat,H).
 
 % 2/ la profondeur maximale n'est pas  atteinte mais J ne peut pas jouer
-negamax(J, Etat, _, _, [rien, H]) :-
+negamax(J, Etat, P, Pmax, [rien, H]) :-
+	P \= Pmax,
 	situation_terminale(J, Etat),
 	heuristique(J,Etat,H).
 
