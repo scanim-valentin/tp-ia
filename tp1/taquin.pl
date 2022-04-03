@@ -167,7 +167,9 @@ delete(N,X,[Y|L], [Y|R]) :-
 	*/
 
 	
-	coordonnees([L,C], Mat, Elt) :- true.    %********
+	coordonnees([X,Y],Mat,Elt) :-
+      nth1(Y,Mat,Ligne),
+      nth1(X,Ligne,Elt).    %********
 											 % A FAIRE
 											 %********
 
@@ -177,8 +179,8 @@ delete(N,X,[Y|L], [Y|R]) :-
    %*************
    
 heuristique(U,H) :-
-    heuristique1(U, H).  % au debut on utilise l'heuristique 1 
-%   heuristique2(U, H).  % ensuite utilisez plutot l'heuristique 2  
+%    heuristique1(U, H).  % au debut on utilise l'heuristique 1 
+   heuristique2(U, H).  % ensuite utilisez plutot l'heuristique 2  
    
    
    %****************
@@ -227,9 +229,7 @@ heuristique(U,H) :-
    % Somme des distances de Manhattan à parcourir par chaque piece
    % entre sa position courante et sa positon dans l'etat final
 
-   coordonnees(X,Y,Mat,Elt) :-
-      nth1(Y,Mat,Ligne),
-      nth1(X,Ligne,Elt).
+  
    
    distance_de_manhattan(XA,YA,XB,YB,Distance) :-
       Xdelta is abs(XA-XB),
@@ -239,8 +239,8 @@ heuristique(U,H) :-
    heuristique2(U, H) :- 
       findall(  Dist,
                (  final_state(Fin),
-                  coordonnees(XA,YA,Fin,Piece),
-                  coordonnees(XB,YB,U,Piece),
+                  coordonnees([XA,YA],Fin,Piece),
+                  coordonnees([XB,YB],U,Piece),
                   distance_de_manhattan(XA,YA,XB,YB,Dist)),
             Distances),
       sum_list(Distances,H).  

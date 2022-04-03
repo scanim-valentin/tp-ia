@@ -57,7 +57,7 @@ main :-
 	empty(Pu0),
 	insert( [ [ F0 , H0 , G0 ] , S0 ] , Pf0 , Pf ),
 	insert([S0, [F0,H0,G0], nil, nil], Pu0, Pu),
-	aetoile(Pf, Pu, Q).
+	aetoile(Pf, Ps, Qs).
 
 
 %*******************************************************************************
@@ -66,13 +66,61 @@ aetoile(nil, nil, _) :- print(' PAS de SOLUTION : L’ETAT FINAL N’EST PAS ATT
 	
 aetoile(Pf, Ps, Qs) :- 
 	suppress_min([ [_,H,_],_ ], Pf, Qs),
-	H is 0.
+	H is 0,
 	affiche_solution(Qs).
 
 aetoile(Pf, Ps, Qs) :- 
 	suppress_min([ [_,H,_],U ], Pf, Pf_next),
+	not(final_state(U)),
 	suppress([ [_,H,_], Pere, U ], Pu, Pu_next),
-	developper().
+	insert([[_,H,_], Pere, U ], Qs, Qs_next),
+	findall([S,[Fs,Hs,Gs],U,Move],
+	         ( rule(Move,C,U,S), expand(S,H,C,[Fs,Hs,Gs]) ),
+	         Liste_Successeurs),
+	loop_successors(Liste_Successeurs, Pu_next, Pf_next, Qs_next),
+	aetoile(Pf, Ps, Qs_next).
+	
+%calcul de l'evaluation [Fs,Hs,Gs] d'un noeud contenant un etat successeur S
+expand(S,Gu,C,[Fs,Hs,Gs]) :-
+    Gs is Gu + C,
+    heuristique(S,Hs),
+    Fs is Hs+Gs.
+
+% si S connu dans Q alors oublier cet état
+loop_successors([SH|STL], Pu_next, Pf_next, Qs_next) :-
+    belongs(SH,Qs_next),
+    loop_successors(STL, Pu_next, Pf_next, Qs_next).
+
+loop_successors([[S,[Fs,_,_],_,_]|STL], Pu_next, Pf_next, Qs_next) :-
+    not(belongs([S,[_,_,_],_,_],Qs_next)),
+    belongs([S,[Fu,_,_],_,_],Pu_next),
+    print(Fu),
+    not(Fs<Fu),
+    print(Fs),
+    loop_successors(STL, Pu_next, Pf_next, Qs_next).
+    
+% S meilleure situation et inconnue de Q et Pu
+loop_successors([ [S,[Fs,Hs,Gs],U,Move] |STL], Pu_next, Pf_next, Qs_next) :-
+    not(belongs([S,[_,_,_],_,_],Qs_next)), 
+    not(belongs([S,[_,_,_],_,_],Pu_next)),
+    insert([S,[Fs,Hs,Gs],U,Move],Pu_next,Pu_next_updated), 
+    insert([[Fs,Hs,Gs],S],Pf_next,Pf_next_updated),
+    loop_successors(STL, Pu_next_updated, Pf_next_updated, Qs_next).
+    
+% S meilleure situation mais deja existante dans Pu
+loop_successors([ [S,[Fs,Hs,Gs],U,Move] |STL], Pu_next, Pf_next, Qs_next) :-
+    belongs([S,[Fu,Hu,Gu],_,_],Pu_next),
+    not(belongs([S,[_,_,_],_,_],Qs_next)),
+    print(la),
+    Fs<Fu,
+    %remplacement par la nouvelle meilleure situation dans Pu et Pf
+    suppress([S,[Fu,Hu,Gu],U,Move],Pu_next_aux),
+    insert([S,[Fs,Hs,Gs],U,Move],Pu_next_aux,Pu_next_updated),
+    suppress([[Fu,Hu,Gu],S],Pf_next,Pf_next_aux),
+    insert([[Fs,Hs,Gs],S],Pf_next_aux,Pf_next_updated),
+    loop_successors(STL, Pu_next_updated, Pf_next_updated, Qs_next).
+ 
+loop_successors([], _, _, _).
 
 
 affiche_solution(S) :- print(S).
