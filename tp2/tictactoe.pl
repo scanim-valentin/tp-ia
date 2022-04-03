@@ -62,9 +62,11 @@ alignement(D, Matrix) :- diagonale(D,Matrix).
 ligne(L, M) :- member(L,M).
 
 get_colonne(_,[],[]).
-get_colonne(Index,[HM|TM],[HC|TC]) :- nth1(Index, HM, HC), get_colonne(Index, TM, TC).
+get_colonne(Index,[HM|TM],[HC|TC]) :- 
+    nth1(Index, HM, HC),
+    get_colonne(Index, TM, TC).
 
-colonne(C,M) :- get_colonne(Index,M,C).
+colonne(C,M) :- get_colonne(_,M,C).
 
 	/* Definition de la relation liant une diagonale D a la matrice M dans laquelle elle se trouve.
 		il y en a 2 sortes de diagonales dans une matrice carree(https://fr.wikipedia.org/wiki/Diagonale) :
@@ -85,7 +87,7 @@ diagonale(D, M) :-
 	premiere_diag(1,D,M).
 diagonale(D, [HM|TL]) :- 
 	length(HM,N),
-	seconde_diag(Len,D,[HM|TL]).
+	seconde_diag(N,D,[HM|TL]).
 	
 premiere_diag(_,[],[]).
 premiere_diag(K,[E|D],[Ligne|M]) :-
@@ -115,7 +117,7 @@ possible([],_).
 	faut pas realiser l'unification.
 	*/
 
-unifiable(X,J) :- var(X).
+unifiable(X,_) :- var(X).
 unifiable(X,J) :- X = J.
 
 	/**********************************
@@ -164,7 +166,7 @@ get_emplacement(Etat, [L,C],Emplacement) :-
 	nth1(L,Etat, Ligne),
 	nth1(C, Ligne, Emplacement).
 
-successeur(J, Etat,[L,C]) :-
+successeur(_, Etat,[L,C]) :-
 	get_emplacement(Etat, [L,C],Emplacement),
 	var(Emplacement).
 
@@ -190,7 +192,10 @@ nb_ali(J,Situation,N) :-
 	length(Alignements,N).
 
 heuristique(J,Situation,H) :-
-	nb_ali(J,Situation,NbAliJ),adversaire(J,A),nb_ali(A,Situation,NbAliA),H is NbAliJ-NbAliA, !.
+	nb_ali(J,Situation,NbAliJ),
+	adversaire(J,A),
+	nb_ali(A,Situation,NbAliA),
+	H is NbAliJ-NbAliA, !.
 
 heuristique(J,Situation,H) :-		% cas 1
 H = 10000,				% grand nombre approximant +infini

@@ -65,12 +65,13 @@ negamax(J, Etat, P, Pmax, [rien, H]) :-
 	heuristique(J,Etat,H).
 
 % 3/ la profondeur maxi n'est pas atteinte et J peut encore jouer
-negamax(J, Etat, P, Pmax, [Coup, V1]) :-
+negamax(J, Etat, P, Pmax, [Coup, V2]) :-
+    not(situation_terminale(J,Etat)),
 	successeurs(J, Etat, ListeCoups),
-	loop_negamax(A,P,Pmax,ListeCoups,VListeCoups),
-	meilleur(VListeCoups, [Coup,V2]),
-	V1 is -V2.
-	%print(V2), print(---).
+	loop_negamax(J,P,Pmax,ListeCoups,VListeCoups),
+	meilleur(VListeCoups, [Coup,V1]),
+	V2 is -V1.
+	%print(V1), print(---).
 
 	/*******************************************
 	 DEVELOPPEMENT D'UNE SITUATION NON TERMINALE
@@ -138,7 +139,7 @@ A FAIRE : commenter chaque litteral de la 2eme clause de loop_negamax/5,
 A FAIRE : ECRIRE ici les clauses de meilleur/2
 	*/
 
-meilleur_aux([[X,Y]|TL],L,[MX,MY]) :-
+meilleur_aux([[_,Y]|TL],L,[MX,MY]) :-
 	MY =< Y,
 	%print(MY),print(<),print(Y),print(----),
 	meilleur_aux(TL,L,[MX,MY]).
@@ -155,7 +156,7 @@ meilleur(L,M) :- member(M,L),meilleur_aux(L,L,M).
 main(B,V, Pmax) :-
 	P = 0,
 	situation_initiale(Etat),
-	negamax(x, Etat, P, Pmax, V).
+	negamax(x, Etat, P, Pmax, [B,V]),!.
 
 
 	/*
