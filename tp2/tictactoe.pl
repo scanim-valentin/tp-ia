@@ -108,7 +108,7 @@ seconde_diag(K,[E|D],[Ligne|M]) :-
 	*****************************/
 
 
-possible([HX|TX],J) :- unifiable(HX,J), possible(TX,J), !.
+possible([HX|TX],J) :- unifiable(HX,J), possible(TX,J).
 possible([],_).
 
 	/* Attention 
@@ -118,7 +118,7 @@ possible([],_).
 	*/
 
 unifiable(X,_) :- var(X).
-unifiable(X,J) :- X = J.
+unifiable(X,J) :- X = J, ground(X).
 
 	/**********************************
 	DEFINITION D'UN ALIGNEMENT GAGNANT
@@ -147,7 +147,8 @@ possible pour J qui n'a aucun element encore libre.
 
 alignement_gagnant(Ali, J) :-  possible(Ali,J), ground(Ali) .
 
-alignement_perdant(Ali, J) :- adversaire(J,A), alignement_gagnant(Ali,A).
+alignement_perdant(Ali, J) :- adversaire(J,A),
+							alignement_gagnant(Ali,A).
 
 
 
@@ -211,7 +212,6 @@ alignement_perdant(Alig,J), !.
 test_mat(M) :- M = [[x,o,x],
 					[_,_,x],
 					[_,_,o]].
-test_heuristique :- test_mat(M),
-					heuristique(x,M,H),
+test_heuristique :- test_mat(M), heuristique(x,M,H),
 					H = 1.
 
