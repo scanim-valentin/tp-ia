@@ -203,7 +203,9 @@ alignement(Alig,Situation),
 alignement_perdant(Alig,J), !.
 
 
-test_mat(M) :- M = [[x,o,x],[_,_,x],[_,_,o]].
+test_mat(M) :- M = [[x,o,x],
+					[_,_,x],
+					[_,_,o]].
 test_heuristique :- test_mat(M),
 					heuristique(x,M,H),
 					H = 1.

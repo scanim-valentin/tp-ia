@@ -5,6 +5,7 @@
 	
 :- [tictactoe].
 
+
 	/****************************************************
   	ALGORITHME MINMAX avec convention NEGAMAX : negamax/5
   	*****************************************************/
@@ -150,7 +151,7 @@ meilleur(L,M) :- member(M,L),meilleur_aux(L,L,M).
 	/******************
   	PROGRAMME PRINCIPAL
   	*******************/
-% B: meilleur deplacement , V: cout espere , Pmax: profondeur d'analyse
+% B: meilleur d�placement , V: co�t esp�r� , Pmax: profondeur d'analyse
 main(B,V, Pmax) :-
 	P = 0,
 	situation_initiale(Etat),
@@ -159,8 +160,8 @@ main(B,V, Pmax) :-
 
 	/*
 A FAIRE :
-	Completer puis tester le programme principal pour plusieurs valeurs de la profondeur maximale.
+	Compl�ter puis tester le programme principal pour plusieurs valeurs de la profondeur maximale.
 	Pmax = 1, 2, 3, 4 ...
-	Commentez les resultats obtenus.
+	Commentez les r�sultats obtenus.
 	*/
 
